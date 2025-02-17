@@ -10,6 +10,12 @@ variable "app" {
   default = "hashitalks"
 }
 
+variable "image" {
+  description = "Docker image used for deployment"
+  type    = string
+  default = "hashitalks"
+}
+
 variable "env" {
   description = "Application env"
   type    = string
