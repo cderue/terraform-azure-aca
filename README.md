@@ -1,3 +1,3 @@
-# learn-aks-platform-engineering-with-terraform-no-code-provisioning
+# learn-aca-platform-engineering-with-terraform-no-code-provisioning
 
-This is a companion repository for AKS Platform Engineering.
+This is a companion repository for Azure Container Apps Platform Engineering.
