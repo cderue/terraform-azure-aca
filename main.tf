@@ -1,17 +1,5 @@
-
-resource "random_pet" "rg_name" {
-  prefix = var.resource_group_name_prefix
-}
-
-resource "random_string" "container_name" {
-  length  = 25
-  lower   = true
-  upper   = false
-  special = false
-}
-
 locals {
-  stack = "${var.app}-${var.env}-${var.location}"
+  stack = "${var.env}-${var.location}-001"
 
   default_tags = {
     environment = var.env
@@ -21,24 +9,24 @@ locals {
 
 resource "azurerm_resource_group" "rg" {
   name     = "rg-${local.stack}"
-  location = var.region
+  location = var.location
 
   tags = local.default_tags
 }
 
 resource "azurerm_log_analytics_workspace" "log" {
   name                = "log-${local.stack}"
-  location            = azurerm_resource_group.my_first_app.location
-  resource_group_name = azurerm_resource_group.my_first_app.name
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
 
   tags = local.default_tags
 }
 
 resource "azurerm_container_app_environment" "cae" {
   name                      = "cae-${local.stack}"
-  location                   = azurerm_resource_group.my_first_app.location
-  resource_group_name        = azurerm_resource_group.my_first_app.name
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.my_first_app.id
+  location                   = var.location
+  resource_group_name        = azurerm_resource_group.rg.name
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.log.id
 
   tags = local.default_tags
 }
@@ -46,8 +34,8 @@ resource "azurerm_container_app_environment" "cae" {
 resource "azurerm_container_app" "ca" {
   name                         = "ca-${local.stack}"
 
-  container_app_environment_id = azurerm_container_app_environment.my_first_app.id
-  resource_group_name          = azurerm_resource_group.my_first_app.name
+  container_app_environment_id = azurerm_container_app_environment.cae.id
+  resource_group_name          = azurerm_resource_group.rg.name
   revision_mode                = "Single"
 
   registry {
