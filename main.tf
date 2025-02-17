@@ -32,7 +32,7 @@ resource "azurerm_container_app_environment" "cae" {
 }
 
 resource "azurerm_container_app" "ca" {
-  name                         = "ca-${local.stack}"
+  name                         = "${var.app}-${local.stack}"
 
   container_app_environment_id = azurerm_container_app_environment.cae.id
   resource_group_name          = azurerm_resource_group.rg.name
