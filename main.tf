@@ -53,10 +53,9 @@ resource "azurerm_container_app" "ca" {
       image  = var.image
       cpu    = 0.25
       memory = "0.5Gi"
+    }
   }
 
   tags = local.default_tags
-
-  }
 }
 
