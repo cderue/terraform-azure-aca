@@ -38,12 +38,6 @@ resource "azurerm_container_app" "ca" {
   resource_group_name          = azurerm_resource_group.rg.name
   revision_mode                = "Single"
 
-  registry {
-    server               = "docker.io"
-    username             = "dockerIOUserName"
-    password_secret_name = "docker-io-pass"
-  }
-
   ingress {
     allow_insecure_connections = false
     external_enabled           = true
