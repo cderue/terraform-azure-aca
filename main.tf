@@ -63,5 +63,6 @@ resource "azurerm_container_app" "ca" {
 
   tags = local.default_tags
 
+  }
 }
 
