@@ -44,6 +44,7 @@ resource "azurerm_container_app" "ca" {
     target_port                = 80
     traffic_weight {
       percentage = 100
+      latest_revision = true
     }
   }
 
