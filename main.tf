@@ -1,10 +1,15 @@
 locals {
-  stack = "${var.env}-${var.location}-001"
+  location_normalized = lower(replace(var.location, " ", ""))
+  stack               = "${var.env}-${local.location_normalized}-${var.resource_suffix}"
 
-  default_tags = {
-    environment = var.env
-    app         = var.app
-  }
+  default_tags = merge(
+    {
+      environment = var.env
+      app         = var.app
+    },
+    var.additional_tags,
+    var.waypoint_application != "" ? { waypoint_application = var.waypoint_application } : {}
+  )
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -18,6 +23,8 @@ resource "azurerm_log_analytics_workspace" "log" {
   name                = "log-${local.stack}"
   location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
+  sku                 = var.log_analytics_sku
+  retention_in_days   = var.log_analytics_retention_in_days
 
   tags = local.default_tags
 }
@@ -39,21 +46,25 @@ resource "azurerm_container_app" "ca" {
   revision_mode                = "Single"
 
   ingress {
-    allow_insecure_connections = false
-    external_enabled           = true
-    target_port                = 80
+    allow_insecure_connections = var.ingress_allow_insecure_connections
+    external_enabled           = var.ingress_external_enabled
+    target_port                = var.ingress_target_port
+
     traffic_weight {
-      percentage = 100
+      percentage      = 100
       latest_revision = true
     }
   }
 
   template {
+    min_replicas = var.min_replicas
+    max_replicas = var.max_replicas
+
     container {
       name   = "${var.app}-${local.stack}"
       image  = var.image
-      cpu    = 0.25
-      memory = "0.5Gi"
+      cpu    = var.container_cpu
+      memory = var.container_memory
     }
   }
 
