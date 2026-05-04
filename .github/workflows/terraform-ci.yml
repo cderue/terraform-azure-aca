@@ -1,0 +1,65 @@
+name: Terraform CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate Terraform
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.5
+
+      - name: Terraform fmt (root)
+        run: terraform fmt -check -recursive
+
+      - name: Terraform init (root)
+        run: terraform init -backend=false
+
+      - name: Terraform validate (root)
+        run: terraform validate
+
+      - name: Terraform init (example basic)
+        working-directory: examples/basic
+        run: terraform init -backend=false
+
+      - name: Terraform validate (example basic)
+        working-directory: examples/basic
+        run: terraform validate
+
+      - name: Terraform init (example private-ingress)
+        working-directory: examples/private-ingress
+        run: terraform init -backend=false
+
+      - name: Terraform validate (example private-ingress)
+        working-directory: examples/private-ingress
+        run: terraform validate
+
+      - name: Terraform init (example production-profile)
+        working-directory: examples/production-profile
+        run: terraform init -backend=false
+
+      - name: Terraform validate (example production-profile)
+        working-directory: examples/production-profile
+        run: terraform validate
+
+      - name: Terraform init (example http-ingress)
+        working-directory: examples/http-ingress
+        run: terraform init -backend=false
+
+      - name: Terraform validate (example http-ingress)
+        working-directory: examples/http-ingress
+        run: terraform validate
